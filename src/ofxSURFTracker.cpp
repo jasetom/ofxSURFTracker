@@ -13,7 +13,7 @@ ofxSURFTracker::ofxSURFTracker(){
     height = 240;
     trackImg.allocate(width, height);
     inputImg.allocate(width, height);
-    hessianThreshold = 500;
+    hessianThreshold = 300;
     octaves = 3;
     octaveLayers = 4;
     bUpright = bContrast = false;
@@ -145,7 +145,7 @@ void ofxSURFTracker::detect(ofImage &img){
     if(inputWidth < width || inputHeight < height){
         return; // detection impossible, because I can't crop out of this image
     }
-    detect(img.getPixels(), inputWidth, inputHeight);
+    detect(img.getPixels().getData(), inputWidth, inputHeight);
 }
 
 //-----------------------------------------------------
@@ -176,7 +176,7 @@ void ofxSURFTracker::detect(unsigned char *pix, int inputWidth, int inputHeight)
                     );
     
     // take out the piece that we want to use.
-    croppedImg.setFromPixels(inputImg.getRoiPixels(), width, height);
+    croppedImg.setFromPixels(inputImg.getRoiPixels().getData(), width, height);
     
     // make it into a trackable grayscale image
     trackImg = croppedImg;
@@ -187,7 +187,7 @@ void ofxSURFTracker::detect(unsigned char *pix, int inputWidth, int inputHeight)
     }
     
     // set up the feature detector
-    detector =  SurfFeatureDetector(hessianThreshold,
+    detector = SurfFeatureDetector(hessianThreshold,
                                     octaves,
                                     octaveLayers,
 									bExtended,
@@ -201,7 +201,8 @@ void ofxSURFTracker::detect(unsigned char *pix, int inputWidth, int inputHeight)
     
     // Calculate descriptors (feature vectors)
     extractor.compute( trackMat, keyPoints_Scene, descriptors_Scene );
-	
+
+    
 }
 
 
@@ -227,6 +228,7 @@ void ofxSURFTracker::learnFeatures(){
     objectBounds.push_back(Point2f(p2.x, p1.y));
     objectBounds.push_back(Point2f(p2.x, p2.y));
     objectBounds.push_back(Point2f(p1.x, p2.y));
+    
 }
 
 //-----------------------------------------------------
@@ -234,8 +236,6 @@ int ofxSURFTracker::match(vector<KeyPoint> keyPoints, Mat descriptors, vector <P
 	// this function tries to match keypoints and descriptors with the current scene
 	// if there is no match, it returns 0,
 	// if there is a match, it returns the number of matches and saves the perspective transform and bounding box
-	
-
 	
 	// Matching descriptor vectors using FLANN matcher
 	vector< DMatch > matches;
@@ -347,7 +347,7 @@ Mat ofxSURFTracker::getObjectDescriptors(){
 //-----------------------------------------------------
 ofImage ofxSURFTracker::getCroppedImage(){
 	ofImage newImg;
-	newImg.setFromPixels(croppedImg.getPixels(), croppedImg.getWidth(), croppedImg.getHeight(), OF_IMAGE_COLOR);
+	newImg.setFromPixels(croppedImg.getPixels().getData(), croppedImg.getWidth(), croppedImg.getHeight(), OF_IMAGE_COLOR);
 	return newImg;
 }
 
