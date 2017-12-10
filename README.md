@@ -6,7 +6,7 @@ Based on the demo code from [http://docs.opencv.org/doc/tutorials/features2d/fea
 
 [Demo video](http://vimeo.com/timknapen/ofxsurftracker-demo)
 
-Tested with OF 0.9.0 on Mac OSX 10.11
+Tested with OF 0.9.8 on Mac OSX 10.11
 
 by Tim Knapen. 
 
